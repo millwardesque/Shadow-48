@@ -23,7 +23,9 @@ namespace Shadow_48
         SceneNode _scene;       // Scene graph root node
         Player _player;         // Player
         Enemy _enemy;           // Enemy        
-        
+        SoundEffect _testEffect;    // Test sound effect
+        SoundEffectInstance _testSoundInstance; // Test sound effect instance
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -105,6 +107,11 @@ namespace Shadow_48
 
             WorldObject crate2 = new WorldObject(_scene, "Crate-2", new Sprite(Content.Load<Texture2D>("crate")));
             crate2.Position = new Vector2(400.0f, 400.0f);
+
+            // Load the sample sounds
+            _testEffect = Content.Load<SoundEffect>("jump");
+            _testSoundInstance = _testEffect.CreateInstance();
+            _testSoundInstance.IsLooped = true;
         }
 
         /// <summary>
@@ -124,6 +131,18 @@ namespace Shadow_48
         protected override void Update(GameTime gameTime)
         {
             KeyboardState keys = Keyboard.GetState();
+
+            if (keys.IsKeyDown(Keys.O))
+            {
+                if (_testSoundInstance.State == SoundState.Playing)
+                {
+                    _testSoundInstance.Stop();
+                }
+                else
+                {
+                    _testSoundInstance.Play();
+                }
+            }
 
             // Allows the game to exit
             if (keys.IsKeyDown(Keys.Escape) || GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
