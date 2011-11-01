@@ -56,6 +56,9 @@ namespace Shadow_48
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            // Load the font
+            _renderer.Font = Content.Load<SpriteFont>("Courier New");
+
             // Load the background
             _background = new Background(new Sprite(Content.Load<Texture2D>("background-1")));
 
@@ -64,22 +67,28 @@ namespace Shadow_48
 
             // Load the player
             // Load the player animations
+            int fps = 6;
             Dictionary<String, FrameSet> playerAnimations = new Dictionary<string, FrameSet>();
-            List<int> walkFrames = new List<int>();
-            walkFrames.Add(0);
-            playerAnimations.Add("walk", new FrameSet(walkFrames, false));
- 
-            List<int> crouchFrames = new List<int>();
-            crouchFrames.Add(1);
-            playerAnimations.Add("crouch", new FrameSet(crouchFrames, false));
+            List<Tuple<int, int>> idleFrames = new List<Tuple<int, int>>();
+            idleFrames.Add(new Tuple<int, int>(0, 0));
+            idleFrames.Add(new Tuple<int, int>(0, 1));
+            playerAnimations.Add("idle", new FrameSet(idleFrames, true, fps));
 
-            List<int> jumpFrames = new List<int>();
-            jumpFrames.Add(2);
-            playerAnimations.Add("jump", new FrameSet(jumpFrames, false));
+            List<Tuple<int, int>> walkFrames = new List<Tuple<int, int>>();
+            walkFrames.Add(new Tuple<int, int>(0, 0));
+            playerAnimations.Add("walk", new FrameSet(walkFrames, true, fps));
 
-            List<int> interactionFrames = new List<int>();
-            interactionFrames.Add(2);
-            playerAnimations.Add("interact", new FrameSet(interactionFrames, false));
+            List<Tuple<int, int>> crouchFrames = new List<Tuple<int, int>>();
+            crouchFrames.Add(new Tuple<int, int>(0, 1));
+            playerAnimations.Add("crouch", new FrameSet(crouchFrames, true, fps));
+
+            List<Tuple<int, int>> jumpFrames = new List<Tuple<int, int>>();
+            jumpFrames.Add(new Tuple<int, int>(0, 2));
+            playerAnimations.Add("jump", new FrameSet(jumpFrames, true, fps));
+
+            List<Tuple<int, int>> interactionFrames = new List<Tuple<int, int>>();
+            interactionFrames.Add(new Tuple<int, int>(0, 2));
+            playerAnimations.Add("interact", new FrameSet(interactionFrames, true, fps));
 
             AnimatedSprite playerSprite = new AnimatedSprite(Content.Load<Texture2D>("player-ss"), 32, 64, playerAnimations);
             _player = new Player(_scene, "Player", playerSprite, 100.0f);

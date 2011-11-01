@@ -58,5 +58,13 @@ namespace Shadow_48
         {
             batch.Draw(Texture, new Rectangle((int)position.X, (int)position.Y, Width, Height), Color.White);
         }
+
+        /// <summary>
+        /// Updates the sprite
+        /// </summary>
+        /// <param name="gameTime">Game time</param>
+        public virtual void Update(GameTime gameTime)
+        {
+        }
     }
 }

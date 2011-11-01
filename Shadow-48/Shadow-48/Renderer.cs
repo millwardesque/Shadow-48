@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Shadow_48
 {
@@ -13,6 +14,7 @@ namespace Shadow_48
     {
         private GraphicsDeviceManager _graphics = null;    // Graphics Device Manager used in the system
         private Color _clearColour = Color.Black;  // Color used to clear the screen
+        private SpriteFont _font = null;    // Font for rendering text
 
         /// <summary>
         /// Width of the render surface
@@ -37,6 +39,15 @@ namespace Shadow_48
         {
             get { return _clearColour; }
             set { _clearColour = value; }
+        }
+
+        /// <summary>
+        /// Rendering font
+        /// </summary>
+        public SpriteFont Font
+        {
+            get { return _font; }
+            set { _font = value; }
         }
 
         /// <summary>
@@ -66,6 +77,22 @@ namespace Shadow_48
         {
             Vector2 flipped = new Vector2(point.X, this.Height - point.Y);
             return flipped;
+        }
+
+        /// <summary>
+        /// Writes text to the screen
+        /// </summary>
+        /// <param name="batch">Sprite batch</param>
+        /// <param name="position">Position to render the text</param>
+        /// <param name="text">Text to render</param>
+        public void WriteText(SpriteBatch batch, Vector2 position, String text)
+        {
+            if (null == _font) {
+                throw new NullReferenceException("Failed rendering text '" + text + "': Font is null");
+            }
+
+            // Draws the text
+            batch.DrawString(_font, text, position, Color.White);
         }
     }
 }

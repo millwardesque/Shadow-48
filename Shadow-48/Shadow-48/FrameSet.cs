@@ -10,13 +10,22 @@ namespace Shadow_48
     /// </summary>
     class FrameSet
     {
-        List<int> _frames;  // Set of frames of animation
+        List<Tuple<int, int>> _frames;  // Set of frames of animation
         bool _loop = false; // True if this animation should loop
+        int _fps;   // Frames per second in the animation cycle
 
+        /// <summary>
+        /// Frames per second of the animation cycle
+        /// </summary>
+        public int FPS
+        {
+            get { return _fps; }
+            set { _fps = value; }
+        }
         /// <summary>
         /// Frames of animation
         /// </summary>
-        public List<int> Frames
+        public List<Tuple<int, int>> Frames
         {
             get { return _frames; }
             set { _frames = value; }
@@ -34,12 +43,14 @@ namespace Shadow_48
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="frames"></param>
-        /// <param name="loop"></param>
-        public FrameSet(List<int> frames, bool loop)
+        /// <param name="frames">List of frames in the animation</param>
+        /// <param name="loop">True if the animation should loop upon completion, else false</param>
+        /// <param name="fps">Frames per second of the animation cycle</param>
+        public FrameSet(List<Tuple<int, int>> frames, bool loop, int fps)
         {
             _frames = frames;
             _loop = loop;
+            _fps = fps;
         }
 
         /// <summary>
@@ -47,7 +58,7 @@ namespace Shadow_48
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public int GetFrame(int index)
+        public Tuple<int, int> GetFrame(int index)
         {
             if (index < 0 && index >= Frames.Count)
             {

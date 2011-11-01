@@ -110,6 +110,7 @@
     <Compile Include="AABB.cs" />
     <Compile Include="AnimatedSprite.cs" />
     <Compile Include="Background.cs" />
+    <Compile Include="Trigger.cs" />
     <Compile Include="FrameSet.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="Player.cs" />

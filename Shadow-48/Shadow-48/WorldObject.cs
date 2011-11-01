@@ -164,6 +164,8 @@ namespace Shadow_48
             _previousPosition = _position;
             _previousAABB = _aabb;
 
+            _sprite.Update(gameTime);
+
             base.Update(gameTime);
         }
 

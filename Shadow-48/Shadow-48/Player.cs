@@ -67,7 +67,7 @@ namespace Shadow_48
                 {
                     case PlayerState.Idle:
                         _updateFunction = this.UpdateIdle;
-                        ((AnimatedSprite)_sprite).ActiveAnimation = "walk";
+                        ((AnimatedSprite)_sprite).ActiveAnimation = "idle";
                         break;
                     case PlayerState.Walking:
                         _updateFunction = this.UpdateWalking;
