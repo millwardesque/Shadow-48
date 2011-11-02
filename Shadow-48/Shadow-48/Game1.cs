@@ -93,7 +93,12 @@ namespace Shadow_48
             playerAnimations.Add("interact", new FrameSet(interactionFrames, true, fps));
 
             AnimatedSprite playerSprite = new AnimatedSprite(Content.Load<Texture2D>("player-ss"), 32, 64, playerAnimations);
-            _player = new Player(_scene, "Player", playerSprite, 100.0f);
+
+            // Load the player sounds
+            Dictionary<String, SoundEffect> playerSoundFX = new Dictionary<string, SoundEffect>();
+            playerSoundFX.Add("jump", Content.Load<SoundEffect>("jump"));
+
+            _player = new Player(_scene, "Player", playerSprite, 100.0f, playerSoundFX);
             
             // Load the enemy
             Sprite enemySprite = new Sprite(Content.Load<Texture2D>("enemy"));
@@ -107,11 +112,6 @@ namespace Shadow_48
 
             WorldObject crate2 = new WorldObject(_scene, "Crate-2", new Sprite(Content.Load<Texture2D>("crate")));
             crate2.Position = new Vector2(400.0f, 400.0f);
-
-            // Load the sample sounds
-            _testEffect = Content.Load<SoundEffect>("jump");
-            _testSoundInstance = _testEffect.CreateInstance();
-            _testSoundInstance.IsLooped = true;
         }
 
         /// <summary>

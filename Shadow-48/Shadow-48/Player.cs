@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Shadow_48
 {
@@ -26,6 +27,7 @@ namespace Shadow_48
     /// </summary>
     class Player : WorldObject
     {
+        private Dictionary<String, SoundEffect> _soundFX;   // Sound effects to use with the player
         private float _walkSpeed = 20.0f;    // Speed in units per second
         private float _runMultiplier = 2.0f;    // Multiplier used when the player is running
         private PlayerState _state = PlayerState.Idle;  // State of the player
@@ -84,6 +86,11 @@ namespace Shadow_48
                     case PlayerState.Jumping:
                         _updateFunction = this.UpdateCrouching;
                         ((AnimatedSprite)_sprite).ActiveAnimation = "jump";
+
+                        SoundEffect jumpSound = null;
+                        _soundFX.TryGetValue("jump", out jumpSound);
+                        jumpSound.Play();
+
                         break;
                     case PlayerState.Interacting:
                         _updateFunction = this.UpdateInteract;
@@ -110,11 +117,13 @@ namespace Shadow_48
         /// <param name="name">Name of the object</param>
         /// <param name="sprite">The sprite representing the player</param>
         /// <param name="walkSpeed">Walking speed of the player</param>
-        public Player(SceneNode parent, String name, Sprite sprite, float walkSpeed)
+        /// <param name="soundFX">Sound effects for the player</param>
+        public Player(SceneNode parent, String name, Sprite sprite, float walkSpeed, Dictionary<String, SoundEffect> soundFX)
             : base(parent, name, sprite)
         {
             WalkSpeed = walkSpeed;
             _updateFunction = this.UpdateWalking;
+            _soundFX = soundFX;
             IsFixed = false;
         }
 
