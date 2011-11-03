@@ -34,7 +34,8 @@ namespace Shadow_48
         private delegate void UpdateUsingState(GameTime gameTime, KeyboardState keys, float elapsedSeconds);    // Function for updating the player.  Changed depending on player state
         UpdateUsingState _updateFunction;   // Update function to run
         private WorldObject _objectUnder = null;   // Object that the player is ducking under
-
+        private SoundEffectInstance _runSound = null;   // Instance of the current run sound
+        private SoundEffectInstance _walkSound = null;   // Instance of the current walk sound
         private float _noiseLevel = 0.0f;   // Level of noise emitted by the player
 
         /// <summary>
@@ -62,7 +63,31 @@ namespace Shadow_48
             get { return _state; }
             set
             {
+                PlayerState oldState = _state;
                 _state = value;
+
+                // Process the state we're changing from
+                switch (oldState)
+                {
+                    case PlayerState.Running:
+                        if (null != _runSound)
+                        {
+                            _runSound.Stop();
+                            _runSound = null;
+                        }
+                        break;
+
+                    case PlayerState.Walking:
+                        if (null != _walkSound)
+                        {
+                            _walkSound.Stop();
+                            _walkSound = null;
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
 
                 // Adjust the state of the player
                 switch (_state)
@@ -74,10 +99,20 @@ namespace Shadow_48
                     case PlayerState.Walking:
                         _updateFunction = this.UpdateWalking;
                         ((AnimatedSprite)_sprite).ActiveAnimation = "walk";
+                        SoundEffect walkSound;
+                        _soundFX.TryGetValue("walk", out walkSound);
+                        _walkSound = walkSound.CreateInstance();
+                        _walkSound.IsLooped = true;
+                        _walkSound.Play();
                         break;
                     case PlayerState.Running:
                         _updateFunction = this.UpdateRunning;
                         ((AnimatedSprite)_sprite).ActiveAnimation = "walk";
+                        SoundEffect runSound;
+                        _soundFX.TryGetValue("run", out runSound);
+                        _runSound = runSound.CreateInstance();
+                        _runSound.IsLooped = true;
+                        _runSound.Play();
                         break;
                     case PlayerState.Crouching:
                         _updateFunction = this.UpdateCrouching;

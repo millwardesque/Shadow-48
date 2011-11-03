@@ -97,7 +97,8 @@ namespace Shadow_48
             // Load the player sounds
             Dictionary<String, SoundEffect> playerSoundFX = new Dictionary<string, SoundEffect>();
             playerSoundFX.Add("jump", Content.Load<SoundEffect>("jump"));
-
+            playerSoundFX.Add("run", Content.Load<SoundEffect>("run"));
+            playerSoundFX.Add("walk", Content.Load<SoundEffect>("walk"));
             _player = new Player(_scene, "Player", playerSprite, 100.0f, playerSoundFX);
             
             // Load the enemy
