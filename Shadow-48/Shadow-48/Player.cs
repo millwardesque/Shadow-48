@@ -10,19 +10,6 @@ using Microsoft.Xna.Framework.Audio;
 namespace Shadow_48
 {
     /// <summary>
-    /// States the player can assume
-    /// </summary>
-    enum PlayerState
-    {
-        Idle,
-        Walking,
-        Running,
-        Crouching,
-        Jumping,
-        Interacting
-    };
-
-    /// <summary>
     /// A player in the game
     /// </summary>
     class Player : WorldObject
@@ -30,12 +17,13 @@ namespace Shadow_48
         private Dictionary<String, SoundEffect> _soundFX;   // Sound effects to use with the player
         private float _walkSpeed = 20.0f;    // Speed in units per second
         private float _runMultiplier = 2.0f;    // Multiplier used when the player is running
-        private PlayerState _state = PlayerState.Idle;  // State of the player
+        private PlayerStateType _state = PlayerStateType.Idle;  // State of the player
         private delegate void UpdateUsingState(GameTime gameTime, KeyboardState keys, float elapsedSeconds);    // Function for updating the player.  Changed depending on player state
         UpdateUsingState _updateFunction;   // Update function to run
         private WorldObject _objectUnder = null;   // Object that the player is ducking under
-        private SoundEffectInstance _runSound = null;   // Instance of the current run sound
-        private SoundEffectInstance _walkSound = null;   // Instance of the current walk sound
+        private SoundEffectInstance _runSound = null;   // Instance of the run sound
+        private SoundEffectInstance _walkSound = null;   // Instance of the walk sound
+        private SoundEffectInstance _crouchSound = null;    // Instance of the crouch sound
         private float _noiseLevel = 0.0f;   // Level of noise emitted by the player
 
         /// <summary>
@@ -58,18 +46,18 @@ namespace Shadow_48
         /// <summary>
         /// State of the player
         /// </summary>
-        public PlayerState State
+        public PlayerStateType State
         {
             get { return _state; }
             set
             {
-                PlayerState oldState = _state;
+                PlayerStateType oldState = _state;
                 _state = value;
 
                 // Process the state we're changing from
                 switch (oldState)
                 {
-                    case PlayerState.Running:
+                    case PlayerStateType.Running:
                         if (null != _runSound)
                         {
                             _runSound.Stop();
@@ -77,7 +65,14 @@ namespace Shadow_48
                         }
                         break;
 
-                    case PlayerState.Walking:
+                    case PlayerStateType.Crouching:
+                        if (null != _crouchSound)
+                        {
+                            _crouchSound.Stop();
+                            _crouchSound = null;
+                        }
+                        break;
+                    case PlayerStateType.Walking:
                         if (null != _walkSound)
                         {
                             _walkSound.Stop();
@@ -92,11 +87,11 @@ namespace Shadow_48
                 // Adjust the state of the player
                 switch (_state)
                 {
-                    case PlayerState.Idle:
+                    case PlayerStateType.Idle:
                         _updateFunction = this.UpdateIdle;
                         ((AnimatedSprite)_sprite).ActiveAnimation = "idle";
                         break;
-                    case PlayerState.Walking:
+                    case PlayerStateType.Walking:
                         _updateFunction = this.UpdateWalking;
                         ((AnimatedSprite)_sprite).ActiveAnimation = "walk";
                         SoundEffect walkSound;
@@ -105,7 +100,7 @@ namespace Shadow_48
                         _walkSound.IsLooped = true;
                         _walkSound.Play();
                         break;
-                    case PlayerState.Running:
+                    case PlayerStateType.Running:
                         _updateFunction = this.UpdateRunning;
                         ((AnimatedSprite)_sprite).ActiveAnimation = "walk";
                         SoundEffect runSound;
@@ -114,11 +109,11 @@ namespace Shadow_48
                         _runSound.IsLooped = true;
                         _runSound.Play();
                         break;
-                    case PlayerState.Crouching:
+                    case PlayerStateType.Crouching:
                         _updateFunction = this.UpdateCrouching;
                         ((AnimatedSprite)_sprite).ActiveAnimation = "crouch";
                         break;
-                    case PlayerState.Jumping:
+                    case PlayerStateType.Jumping:
                         _updateFunction = this.UpdateCrouching;
                         ((AnimatedSprite)_sprite).ActiveAnimation = "jump";
 
@@ -127,7 +122,7 @@ namespace Shadow_48
                         jumpSound.Play();
 
                         break;
-                    case PlayerState.Interacting:
+                    case PlayerStateType.Interacting:
                         _updateFunction = this.UpdateInteract;
                         ((AnimatedSprite)_sprite).ActiveAnimation = "interact";
                         break;
@@ -175,128 +170,128 @@ namespace Shadow_48
             // Update the state of the player based on the user input
             switch (State)
             {
-                case PlayerState.Idle:
+                case PlayerStateType.Idle:
                     if (IsMovementRequested(keys))
                     {
                         if (IsRunningRequested(keys))
                         {
-                            State = PlayerState.Running;
+                            State = PlayerStateType.Running;
                         }
                         else
                         {
-                            State = PlayerState.Walking;
+                            State = PlayerStateType.Walking;
                         }
                     }
                     else if (IsCrouchingRequested(keys))
                     {
-                        State = PlayerState.Crouching;
+                        State = PlayerStateType.Crouching;
                     }
                     else if (IsJumpingRequested(keys))
                     {
-                        State = PlayerState.Jumping;
+                        State = PlayerStateType.Jumping;
                     }
                     else if (IsInteractRequested(keys) && CanInteract())
                     {
-                        State = PlayerState.Interacting;
+                        State = PlayerStateType.Interacting;
                     }
                     break;
-                case PlayerState.Walking:
+                case PlayerStateType.Walking:
                     if (!IsMovementRequested(keys))
                     {
-                        State = PlayerState.Idle;
+                        State = PlayerStateType.Idle;
                     }
                     else if (IsRunningRequested(keys))
                     {
-                        State = PlayerState.Running;
+                        State = PlayerStateType.Running;
                     }
                     else if (IsCrouchingRequested(keys))
                     {
-                        State = PlayerState.Crouching;
+                        State = PlayerStateType.Crouching;
                     }
                     else if (IsJumpingRequested(keys))
                     {
-                        State = PlayerState.Jumping;
+                        State = PlayerStateType.Jumping;
                     }
                     else if (IsInteractRequested(keys) && CanInteract())
                     {
-                        State = PlayerState.Interacting;
+                        State = PlayerStateType.Interacting;
                     }
                     break;
-                case PlayerState.Running:
+                case PlayerStateType.Running:
                     if (!IsMovementRequested(keys))
                     {
-                        State = PlayerState.Idle;
+                        State = PlayerStateType.Idle;
                     }
                     else if (!IsRunningRequested(keys))
                     {
-                        State = PlayerState.Walking;
+                        State = PlayerStateType.Walking;
                     }
                     else if (IsCrouchingRequested(keys))
                     {
-                        State = PlayerState.Crouching;
+                        State = PlayerStateType.Crouching;
                     }
                     else if (IsJumpingRequested(keys))
                     {
-                        State = PlayerState.Jumping;
+                        State = PlayerStateType.Jumping;
                     }
                     break;
-                case PlayerState.Crouching:
+                case PlayerStateType.Crouching:
                     if (!IsCrouchingRequested(keys) && _objectUnder == null)
                     {
                         if (IsMovementRequested(keys))
                         {
                             if (IsRunningRequested(keys))
                             {
-                                State = PlayerState.Running;
+                                State = PlayerStateType.Running;
                             }
                             else
                             {
-                                State = PlayerState.Walking;
+                                State = PlayerStateType.Walking;
                             }
                         }
                         else
                         {
-                            State = PlayerState.Idle;
+                            State = PlayerStateType.Idle;
                         }
                     }
                     break;
-                case PlayerState.Jumping:
+                case PlayerStateType.Jumping:
                     if (!IsJumpingRequested(keys))
                     {
                         if (IsMovementRequested(keys))
                         {
                             if (IsRunningRequested(keys))
                             {
-                                State = PlayerState.Running;
+                                State = PlayerStateType.Running;
                             }
                             else
                             {
-                                State = PlayerState.Walking;
+                                State = PlayerStateType.Walking;
                             }
                         }
                         else
                         {
-                            State = PlayerState.Idle;
+                            State = PlayerStateType.Idle;
                         }
                     }
                     break;
-                case PlayerState.Interacting:
+                case PlayerStateType.Interacting:
                     if (!IsInteractRequested(keys))
                     {
                         if (IsMovementRequested(keys))
                         {
                             if (IsRunningRequested(keys))
                             {
-                                State = PlayerState.Running;
+                                State = PlayerStateType.Running;
                             }
                             else
                             {
-                                State = PlayerState.Walking;
+                                State = PlayerStateType.Walking;
                             }
                         }
                         else
                         {
-                            State = PlayerState.Idle;
+                            State = PlayerStateType.Idle;
                         }
                     }
                     break;
@@ -520,9 +515,26 @@ namespace Shadow_48
                 distance *= crouchSlowdown * WalkSpeed * elapsedSeconds;
                 this.Adjust(distance);
                 _noiseLevel = 0.3f;
+
+                // If we're not playing the looping crouch noise, play it now
+                if (null == _crouchSound)
+                {
+                    SoundEffect crouchSound;
+                    _soundFX.TryGetValue("walk", out crouchSound);
+                    _crouchSound = crouchSound.CreateInstance();
+                    _crouchSound.IsLooped = true;
+                    _crouchSound.Play();
+                    _crouchSound.Volume /= 4.0f;
+                }
             }
             else
             {
+                // If we're not playing the looping crouch noise, play it now
+                if (null != _crouchSound)
+                {
+                    _crouchSound.Stop();
+                    _crouchSound = null;
+                }
                 _noiseLevel = 0.0f;
             }
 
@@ -593,12 +605,12 @@ namespace Shadow_48
         public override void ProcessCollision(WorldObject collider)
         {
             // Ignore collisions in certain cases
-            if (collider.IsElevated && State == PlayerState.Crouching)
+            if (collider.IsElevated && State == PlayerStateType.Crouching)
             {
                 _objectUnder = collider;
                 return;
             }
-            else if (!collider.IsHigh && State == PlayerState.Jumping)
+            else if (!collider.IsHigh && State == PlayerStateType.Jumping)
             {
                 _objectUnder = null;
                 return;
